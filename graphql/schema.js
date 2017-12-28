@@ -10,12 +10,12 @@ type User {
   lastname: String
 }
 
-type Post {
+type Post @cacheControl(maxAge: 240) {
   _id: String!
   title: String
   createdAt: String
   author: User
-  likes: [Like]
+  likes: [Like] @cacheControl(maxAge: 30)
 }
 
 input postInput {
@@ -32,8 +32,9 @@ type Like {
 
 # the schema allows the following query:
 type Query {
-  user(id: String): User
-  posts: [Post]
+  user(id: String!): User
+  posts (authorId: String): [Post]
+  post (id: String!): Post
 }
 
 # this schema allows the following mutation:

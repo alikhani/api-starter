@@ -8,6 +8,7 @@
     "start": "NODE_ENV=production node server.js"
   },
   "dependencies": {
+    "apollo-engine": "^0.8.1",
     "apollo-server-express": "^1.2.0",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.18.2",

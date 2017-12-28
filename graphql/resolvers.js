@@ -5,11 +5,19 @@ const Like = require('../models/like');
 const resolveFunctions = {
   Query: {
     user(_, { id }, { user }) {
-      console.log('in Query: ',id,', context.user: ',user);
       return User.findById(id);
     },
-    posts(_, args, { user }) {
-      return Post.find({});
+    posts(_, { authorId }, { user }, { cacheControl }) {
+      if (authorId) {
+        cacheControl.setCacheHint({ maxAge: 60 })
+        return Post.find({ authorId }).sort('-createdAt');
+      }
+      cacheControl.setCacheHint({ maxAge: 60 })
+      return Post.find({}).sort('-createdAt');
+    },
+    post(_, { id }, { user }, { cacheControl }) {
+      cacheControl.setCacheHint({ maxAge: 60 })
+      return Post.findOne({ _id: id })
     }
   },
   Mutation: {
@@ -48,6 +56,11 @@ const resolveFunctions = {
           return newLike.save();
         })
         .then(doc => doc);
+    }
+  },
+  Post: {
+    author(post) {
+      return User.findOne({ _id: post.authorId });
     }
   }
 };

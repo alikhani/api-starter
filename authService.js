@@ -44,7 +44,7 @@ const authenticate = expressJwt({
   credentialsRequired: true,
   getToken: function(req) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-        return req.headers.authorization.split(' ')[1];
+      return req.headers.authorization.split(' ')[1];
     } else if (req.query && req.query.token) {
       return req.query.token;
     }
@@ -64,18 +64,18 @@ const getOne = function (req, res) {
 function setupAuthService(app) {
 
   passport.use(new FacebookTokenStrategy({
-      clientID: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      fbGraphVersion: 'v2.9',
-      profileFields: ['id', 'displayName', 'name', 'emails', 'gender', 'locale', 'birthday', 'location']
-    },
-    function (accessToken, refreshToken, profile, done) {
-      // console.log('profile: ',profile);
-      const profileJson = profile._json
-      User.upsertFbUser(accessToken, refreshToken, profile, profileJson, function(err, user) {
-        return done(err, user);
-      });
-    }));
+    clientID: process.env.FACEBOOK_CLIENT_ID,
+    clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    fbGraphVersion: 'v2.9',
+    profileFields: ['id', 'displayName', 'name', 'emails', 'gender', 'locale', 'birthday', 'location']
+  },
+  function (accessToken, refreshToken, profile, done) {
+    // console.log('profile: ',profile);
+    const profileJson = profile._json
+    User.upsertFbUser(accessToken, refreshToken, profile, profileJson, function(err, user) {
+      return done(err, user);
+    });
+  }));
 
   app.post('/auth/facebook', passport.authenticate('facebook-token', {session: false}), function(req, res, next) {
     if (!req.user) {
@@ -121,7 +121,7 @@ function setupAuthService(app) {
     }
   }, generateToken, sendToken)
 
-  app.post('/auth/login', function(req, res, next) {
+  app.post('/auth/local', function(req, res, next) {
     if (!req.body.email || !req.body.password) {
       res.json({success: false, msg: 'Please pass email and password.'});
     } else {
@@ -141,7 +141,6 @@ function setupAuthService(app) {
           }
           next();
         }
-
       })
     }
   }, generateToken, sendToken)
